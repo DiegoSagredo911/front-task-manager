@@ -1,13 +1,14 @@
 "use client";
 import axios from "axios";
-import moment from "moment-timezone";
 import React, { useContext, useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaCheckCircle, FaRegCircle } from "react-icons/fa";
+import { FaCheckCircle, FaRegCircle } from "react-icons/fa";
+import { ImSpinner } from "react-icons/im";
 import { globalContext } from "./context/GlobalContext";
 import CardTask from "./component/CardTask";
 
 export default function Home() {
   const { tasks, setTasks } = useContext(globalContext);
+  const [loading, setLoading] = useState(true);
   const [task, setTask] = useState({
     title: "",
     description: "",
@@ -35,6 +36,7 @@ export default function Home() {
           const mensaje =
             error?.response?.data?.message || "Error en el servidor";
           alert(mensaje);
+          return;
         });
       alert(respose?.data?.message);
 
@@ -47,6 +49,7 @@ export default function Home() {
           const mensaje =
             error?.response?.data?.message || "Error en el servidor";
           alert(mensaje);
+          return;
         });
       alert(respose?.data?.message);
 
@@ -71,6 +74,7 @@ export default function Home() {
           const mensaje =
             err?.response?.data?.message || "Error en el servidor";
           alert(mensaje);
+          return;
         });
       alert(respose?.data?.message);
       setTasks(tasks.filter((_, i) => i !== index));
@@ -86,6 +90,7 @@ export default function Home() {
           const mensaje =
             error?.response?.data?.message || "Error en el servidor";
           alert(mensaje);
+          return;
         });
 
       if (respose?.data?.message) {
@@ -103,10 +108,12 @@ export default function Home() {
 
   const getTasks = async () => {
     try {
+      setLoading(true);
       const query = filter === "all" ? "" : `?completed=${filter}`;
       const result = await axios.get(
         process.env.NEXT_PUBLIC_API + "tasks" + query
       );
+      setLoading(false);
       setTasks(result.data);
     } catch (error) {
       alert("Error al obtener las tareas");
@@ -160,8 +167,25 @@ export default function Home() {
           </select>
         </div>
 
+        <div className="text-center gap-3">
+          <h2 className="text-3xl font-semibold ">Tasks</h2>
+
+          <div className="flex justify-center items-center">
+            <span className="mr-2">Completada</span>
+            <FaCheckCircle className="text-green-500 inline-block" />
+            <span className="mx-2">Pendiente</span>
+            <FaRegCircle className="text-red-500 inline-block" />
+          </div>
+        </div>
         <div className="text-center">
-          <h2 className="text-3xl font-semibold mb-2">Tasks</h2>
+          {loading ? (
+            <div className="flex flex-col justify-center items-center">
+              <ImSpinner className="animate-spin text-4xl text-blue-500" />
+              <p className="text-gray-500">Cargando...</p>
+            </div>
+          ) : tasks.length === 0 && !loading ? (
+            <p className="text-gray-500">No hay tareas para mostrar</p>
+          ) : null}
         </div>
       </div>
 

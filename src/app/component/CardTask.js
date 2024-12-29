@@ -21,7 +21,7 @@ const CardTask = ({
           {completed ? (
             <FaCheckCircle className="text-green-500" />
           ) : (
-            <FaRegCircle className="text-gray-500" />
+            <FaRegCircle className="text-red-500" />
           )}
         </button>
         <div>
